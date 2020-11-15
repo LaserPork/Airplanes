@@ -19,7 +19,7 @@ public class CameraFollow : MonoBehaviour
     void Update()
     {
         Vector3 followingCenter = new Vector3(0,0,0);
-        Vector2 minValue = new Vector2(float.MaxValue, float.MaxValue);
+        Vector2 minValue = new Vector2(float.MaxValue, ground.transform.position.y);
         Vector2 maxValue = new Vector2(float.MinValue, float.MinValue);
         for(int i = 0; i < following.Length; i++)
         {
@@ -28,10 +28,12 @@ public class CameraFollow : MonoBehaviour
             {
                 minValue.x = following[i].transform.position.x;
             }
+            /*
             if(following[i].transform.position.y < minValue.y)
             {
                 minValue.y = following[i].transform.position.y;
             }
+            */
             if(following[i].transform.position.x > maxValue.x)
             {
                 maxValue.x = following[i].transform.position.x;
@@ -44,7 +46,6 @@ public class CameraFollow : MonoBehaviour
         followingCenter /= following.Length;
         followingCenter.z = -10;
 
-        gameObject.transform.position = followingCenter;
 
 
         float vertExtent = currentCamera.orthographicSize;    
@@ -56,12 +57,15 @@ public class CameraFollow : MonoBehaviour
     
         if(requiredWidth - horzExtent < requiredHeight - vertExtent)
         {
-            currentCamera.orthographicSize = requiredHeight * 1.2f;
+            currentCamera.orthographicSize = requiredHeight;
         }
         else
         {
             currentCamera.orthographicSize = requiredWidth * 1.2f * Screen.height / Screen.width;
         }
+
+        followingCenter.y = ground.transform.position.y + currentCamera.orthographicSize / 2;
         
+        currentCamera.transform.position = followingCenter;
     }
 }
