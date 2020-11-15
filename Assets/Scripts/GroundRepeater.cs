@@ -18,25 +18,59 @@ public class GroundRepeater : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+       
+        addGround();
+        removeGround();
+    }
+
+    void removeGround() 
+    {
         float vertExtent = currentCamera.orthographicSize;    
         float horzExtent = vertExtent * Screen.width / Screen.height;
-        
-        Transform leftMost = getLeftMost();
-        Transform rightMost = getRightMost();
 
-        if(currentCamera.transform.position.x + 2*horzExtent > rightMost.position.x - rightMost.localScale.x) 
+        Transform rightMost = getRightMost();
+        if(currentCamera.transform.position.x + 2*horzExtent < rightMost.position.x - rightMost.localScale.x) 
+        {
+            Destroy(rightMost.gameObject);
+            rightMost = getRightMost();
+        }
+
+        Transform leftMost = getLeftMost();
+        if(currentCamera.transform.position.x - 2*horzExtent > leftMost.position.x + leftMost.localScale.x) 
+        {
+            Destroy(leftMost.gameObject);
+            leftMost = getLeftMost();
+        }
+    }
+    void addGround()
+    {
+        float vertExtent = currentCamera.orthographicSize;    
+        float horzExtent = vertExtent * Screen.width / Screen.height;
+
+        Transform rightMost = getRightMost();
+        while(currentCamera.transform.position.x + horzExtent > rightMost.position.x - rightMost.localScale.x) 
         {
             Vector3 oldPosition = rightMost.position;
             oldPosition.x += rightMost.transform.localScale.x;
             GameObject clone = Instantiate(rightMost.gameObject);
+            clone.name = rightMost.name;
             clone.transform.SetParent(gameObject.transform);
             clone.transform.position = oldPosition;
             rightMost = getRightMost();
-            Debug.Log(rightMost.position.x);
         }
-       
-    }
 
+        Transform leftMost = getLeftMost();
+        while(currentCamera.transform.position.x - horzExtent < leftMost.position.x + leftMost.localScale.x) 
+        {
+            Vector3 oldPosition = leftMost.position;
+            oldPosition.x -= leftMost.transform.localScale.x;
+            GameObject clone = Instantiate(leftMost.gameObject);
+            clone.name = leftMost.name;
+            clone.transform.SetParent(gameObject.transform);
+            clone.transform.position = oldPosition;
+            leftMost = getLeftMost();
+        }
+    }
     Transform getLeftMost()
     {
         Transform leftMost = transform.GetChild(0);
